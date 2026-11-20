@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaunchPad Jobs | Curated Entry-Level & Fresher Opportunities</title>
+  <!-- PapaParse CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --hero-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --badge-city-bg: #ecfdf5;
+      --badge-city-text: #047857;
+      --badge-id-bg: #eef2ff;
+      --badge-id-text: #4338ca;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Hero Banner Header */
+    header {
+      background: var(--hero-bg);
+      color: #ffffff;
+      padding: 3.5rem 1rem 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 300px;
+      height: 300px;
+      background: rgba(124, 58, 237, 0.25);
+      filter: blur(80px);
+      border-radius: 50%;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      padding: 0.35rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a7f3d0;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .title-group h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-group p {
+      font-size: 1.1rem;
+      color: #94a3b8;
+    }
+
+    /* Stats Ribbon */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    /* Floating Control Bar */
+    .controls-wrapper {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      margin-top: -1.5rem;
+      position: relative;
+      z-index: 20;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto auto;
+      gap: 0.85rem;
+      align-items: center;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #f8fafc;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: #6366f1;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    button {
+      padding: 0.8rem 1.3rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .btn-refresh {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+    }
+
+    .btn-reset {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .btn-reset:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0 1.5rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Job Cards Grid */
+    .job-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      padding-bottom: 4rem;
+    }
+
+    .job-card {
+      background: var(--card-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Card Accent Top Border Effect */
+    .job-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-gradient);
+      opacity: 0.8;
+    }
+
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1);
+      border-color: #a5b4fc;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .job-role-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1e293b;
+      line-height: 1.3;
+    }
+
+    .job-id {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--badge-id-text);
+      background: var(--badge-id-bg);
+      padding: 4px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .company-name {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 1.25rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+    }
+
+    .badge-city {
+      background: var(--badge-city-bg);
+      color: var(--badge-city-text);
+    }
+
+    .apply-btn {
+      display: block;
+      text-align: center;
+      background: #f8fafc;
+      color: #4338ca;
+      border: 1.5px solid #c7d2fe;
+      text-decoration: none;
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: all 0.25s ease;
+    }
+
+    .apply-btn:hover {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .message-box {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 2px dashed #cbd5e1;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+      font-size: 1.05rem;
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      margin-top: auto;
+      border-top: 1px solid #1e293b;
+    }
+
+    footer p {
+      font-size: 0.9rem;
+    }
+
+    footer span {
+      color: #f43f5e;
+    }
+
+    @media (max-width: 850px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      .title-group h1 {
+        font-size: 1.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-tag">✨ 100% Curated for Graduates & Freshers</span>
+        <div class="title-group">
+          <h1>🚀 Launch Your Career Beyond Boundaries</h1>
+          <p>Handpicked Entry-Level Jobs, Internships & Graduate Engineering Roles</p>
+        </div>
+        <div class="hero-stats">
+          <span class="stat-chip">🎯 100% Verified Freshers Roles</span>
+          <span class="stat-chip">✨ Kickstart Your Career</span>
+          <span class="stat-chip">🔄 Real-time Updates</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="controls-wrapper">
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="🔍 Search by Role or Company Name..." />
+        <select id="roleFilter">
+          <option value="">All Roles</option>
+        </select>
+        <select id="cityFilter">
+          <option value="">All Cities</option>
+        </select>
+        <button class="btn-reset" onclick="resetFilters()">Reset</button>
+        <button class="btn-refresh" id="refreshBtn" onclick="loadJobs(true)">&#x21bb; Refresh Data</button>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="resultCount">Loading opportunities...</span>
+      <span id="lastSynced"></span>
+    </div>
+
+    <div class="job-grid" id="jobGrid">
+      <div class="message-box">Fetching verified entry-level job listings...</div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Crafted with <span>❤️</span> for Early-Career Professionals | Powered by LaunchPad Jobs</p>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================================================
+    // PUBLISHED GOOGLE SHEET CSV URL
+    // =========================================================================
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5GOiLexCQ7DU5aWiWkPFgmCf-EcSSxtitROtT_ddhgHNaJaRS9hFGLkLe8jJPrgmbqR63OPXdp3S7/pub?gid=898968285&single=true&output=csv";
+
+    let allJobs = [];
+
+    function loadJobs(isManualRefresh = false) {
+      const grid = document.getElementById("jobGrid");
+      const refreshBtn = document.getElementById("refreshBtn");
+      const resultCount = document.getElementById("resultCount");
+
+      if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL.includes("PASTE_YOUR")) {
+        grid.innerHTML = `<div class="message-box"><strong>Setup Required:</strong> Please paste your published Google Sheet CSV link in the <code>GOOGLE_SHEET_CSV_URL</code> variable inside <code>index.html</code>.</div>`;
+        resultCount.textContent = "0 opportunities loaded";
+        return;
+      }
+
+      if (isManualRefresh) {
+        refreshBtn.textContent = "Refreshing...";
+        refreshBtn.disabled = true;
+      }
+
+      const cacheBusterUrl = GOOGLE_SHEET_CSV_URL + (GOOGLE_SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + new Date().getTime();
+
+      Papa.parse(cacheBusterUrl, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          allJobs = results.data.filter(row => row["Standardized Role"] && row["Standardized Role"].trim() !== "");
+          populateDropdowns(allJobs);
+          filterJobs();
+
+          const now = new Date();
+          document.getElementById("lastSynced").textContent = "Last Synced: " + now.toLocaleTimeString();
+          refreshBtn.innerHTML = "&#x21bb; Refresh Data";
+          refreshBtn.disabled = false;
+        },
+        error: function(err) {
+          console.error("Error loading CSV:", err);
+          grid.innerHTML = `<div class="message-box">Unable to fetch data. Please ensure the Google Sheet is published to the web as a CSV.</div>`;
+          refreshBtn.innerHTML = "&#x21bb; Refresh Data";
+          refreshBtn.disabled = false;
+        }
+      });
+    }
+
+    function populateDropdowns(jobs) {
+      const roleSelect = document.getElementById("roleFilter");
+      const citySelect = document.getElementById("cityFilter");
+
+      const currentRole = roleSelect.value;
+      const currentCity = citySelect.value;
+
+      const roles = [...new Set(jobs.map(j => (j["Standardized Role"] || "").trim()).filter(Boolean))].sort();
+      const cities = [...new Set(jobs.map(j => (j["Standardized City"] || "").trim()).filter(Boolean))].sort();
+
+      roleSelect.innerHTML = `<option value="">All Roles (${roles.length})</option>` +
+        roles.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join("");
+
+      citySelect.innerHTML = `<option value="">All Cities (${cities.length})</option>` +
+        cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+      roleSelect.value = currentRole;
+      citySelect.value = currentCity;
+    }
+
+    function filterJobs() {
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      const selectedRole = document.getElementById("roleFilter").value;
+      const selectedCity = document.getElementById("cityFilter").value;
+
+      const filtered = allJobs.filter(job => {
+        const role = (job["Standardized Role"] || "").toLowerCase();
+        const company = (job["Company Name"] || "").toLowerCase();
+        const city = (job["Standardized City"] || "").trim();
+
+        const matchesSearch = !query || role.includes(query) || company.includes(query);
+        const matchesRole = !selectedRole || job["Standardized Role"].trim() === selectedRole;
+        const matchesCity = !selectedCity || city === selectedCity;
+
+        return matchesSearch && matchesRole && matchesCity;
+      });
+
+      renderJobs(filtered);
+    }
+
+    function renderJobs(jobs) {
+      const grid = document.getElementById("jobGrid");
+      const resultCount = document.getElementById("resultCount");
+
+      resultCount.textContent = `Showing ${jobs.length} of ${allJobs.length} opportunities`;
+
+      if (jobs.length === 0) {
+        grid.innerHTML = `<div class="message-box">No matching opportunities found. Try clearing your search or filters.</div>`;
+        return;
+      }
+
+      grid.innerHTML = jobs.map(job => {
+        const id = escapeHtml(job["Job ID"] || "N/A");
+        const company = escapeHtml(job["Company Name"] || "Company Confidential");
+        const role = escapeHtml(job["Standardized Role"] || "General Role");
+        const city = escapeHtml(job["Standardized City"] || "Not Specified");
+        const link = job["Apply Link"] ? job["Apply Link"].trim() : "#";
+
+        return `
+          <div class="job-card">
+            <div>
+              <div class="card-header">
+                <div class="job-role-title">${role}</div>
+                <span class="job-id">ID: ${id}</span>
+              </div>
+              <div class="company-name">🏢 ${company}</div>
+              <div class="badges">
+                <span class="badge badge-city">📍 ${city}</span>
+              </div>
+            </div>
+            <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="apply-btn">
+              Apply Now &rarr;
+            </a>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function resetFilters() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("roleFilter").value = "";
+      document.getElementById("cityFilter").value = "";
+      filterJobs();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Event Listeners
+    document.getElementById("searchInput").addEventListener("input", filterJobs);
+    document.getElementById("roleFilter").addEventListener("change", filterJobs);
+    document.getElementById("cityFilter").addEventListener("change", filterJobs);
+
+    // Initial Load
+    window.addEventListener("DOMContentLoaded", () => loadJobs(false));
+  </script>
+</body>
+</html>
