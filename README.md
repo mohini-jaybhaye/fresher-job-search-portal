@@ -48,7 +48,7 @@ A searchable job board for fresher and internship opportunities, built using a S
 
 - **Live Web Application:** [https://launchpad-jobs.netlify.app/]
 - **Google Sheets Documentation:** [https://docs.google.com/spreadsheets/d/1ycOFsIIyWdJfv9uTn4huRaKq7hvK0FXMKsY-kXKsrcs/edit?usp=sharing]
-- **Loom Project Walkthrough:** [Add Loom URL]
+- **Loom Project Walkthrough:** [https://www.loom.com/share/c2dc97b0cd4643f59ec6797fb2c390c7]
 
 ## Project Highlights
 
